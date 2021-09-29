@@ -233,6 +233,13 @@ section.your-active-class .landing__container::after {
 .active-nav {
   color: #1abc9c;
 }
+section.active {
+  background: linear-gradient(
+    0deg,
+    rgba(129, 17, 17, 0.26) 100%,
+    rgba(67, 25, 109, 0.774) 100%
+  );
+}
 
 /* Section Active Styles Keyframe Animations */
 @keyframes rotate {
