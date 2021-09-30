@@ -17,7 +17,7 @@
  * Define Global Variables
  *
  */
-let navbarList = document.querySelector("#navbar__list");
+var navBarLists = document.querySelector("#navbar__list");
 const sections = document.querySelectorAll("section");
 
 /**
@@ -26,11 +26,11 @@ const sections = document.querySelectorAll("section");
  *
  */
 //Function to check if an element is Visible in viewport
-function isInViewport(element) {
+function InViewport(element) {
   var rect = element.getBoundingClientRect();
 
   return (
-    rect.top >= 0 &&
+    rect.top >= -200 &&
     rect.left >= 0 &&
     rect.bottom <=
       (1.5 * window.innerHeight || document.documentElement.clientHeight) &&
@@ -38,17 +38,21 @@ function isInViewport(element) {
   );
 }
 
-//Function to remove active classes
-function deactivateSections() {
-  sections.forEach((element) => {
-    element.classList.remove("your-active-class", "active");
+//Function to remove classes
+
+//remove active-nav
+
+function stopNavLinks() {
+  let navBar = document.querySelectorAll(".nav__hyperlink");
+  navBar.forEach((ele) => {
+    ele.classList.remove("active-nav");
   });
 }
+//remove your-active-class , active
 
-function deactivateNavLinks() {
-  let navbarAnchors = document.querySelectorAll(".nav__hyperlink");
-  navbarAnchors.forEach((element) => {
-    element.classList.remove("active-nav");
+function stopSections() {
+  sections.forEach((ele) => {
+    ele.classList.remove("your-active-class", "active");
   });
 }
 /**
@@ -57,32 +61,34 @@ function deactivateNavLinks() {
  *
  */
 
-// build the nav
-window.addEventListener("load", buildNavbar());
+// add the nav
+window.addEventListener("load", newNavbar());
 // Add class 'active' to section when near top of viewport
-function activateCurrentSection(currentSection) {
-  currentSection.classList.add("your-active-class", "active");
 
-  deactivateNavLinks();
-  activateNavLinks(currentSection.getAttribute("id"));
-}
+function activateNav(SectionId) {
+  let navBar = document.querySelectorAll(".nav__hyperlink");
 
-function activateNavLinks(currentSectionId) {
-  let navbarAnchors = document.querySelectorAll(".nav__hyperlink");
-  //console.log(navbarAnchors);
-  navbarAnchors.forEach((element) => {
-    if (element.getAttribute("href") == `#${currentSectionId}`) {
-      element.classList.add("active-nav");
+  navBar.forEach((ele) => {
+    if (ele.getAttribute("href") == `#${SectionId}`) {
+      ele.classList.add("active-nav");
     }
   });
 }
+
+function activateSection(currentSection) {
+  currentSection.classList.add("your-active-class", "active");
+
+  stopNavLinks();
+  activateNav(currentSection.getAttribute("id"));
+}
 // Scroll to anchor ID using scrollTO event
-function scrollToSectionOnClick() {
-  let navbarAnchors = document.querySelectorAll(".nav__hyperlink");
-  navbarAnchors.forEach((element) => {
-    element.addEventListener("click", function (event) {
+
+function scrollToSectionByClick() {
+  let navBar = document.querySelectorAll(".nav__hyperlink");
+  navBar.forEach((ele) => {
+    ele.addEventListener("click", function (event) {
       event.preventDefault();
-      document.querySelector(element.getAttribute("href")).scrollIntoView({
+      document.querySelector(ele.getAttribute("href")).scrollIntoView({
         behavior: "smooth",
       });
     });
@@ -95,30 +101,32 @@ function scrollToSectionOnClick() {
  *
  */
 
-// Build menu
-function buildNavbar() {
-  sections.forEach((element) => {
-    let listItem = document.createElement("li");
-    listItem.classList.add("navbar__list__item");
-    let sectionName = element.getAttribute("data-nav");
-    let currentSectionId = element.getAttribute("id");
-    listItem.innerHTML = `<a href="#${currentSectionId}" class="nav__hyperlink">${sectionName}</a>`;
-    navbarList.appendChild(listItem);
+// Build menu Items
+function newNavbar() {
+  sections.forEach((ele) => {
+    let listOfItems = document.createElement("li");
+    listOfItems.classList.add("navbar__list__item");
+    let sectionName = ele.getAttribute("data-nav");
+    let SectionId = ele.getAttribute("id");
+    listOfItems.innerHTML = `<a href="#${SectionId}" class="nav__hyperlink">${sectionName}</a>`;
+    navBarLists.appendChild(listOfItems);
   });
 }
-// Scroll to section on link click
-scrollToSectionOnClick();
-// Set sections as active
+
+// Set sections in active
 window.addEventListener("scroll", function (event) {
   event.preventDefault();
 
-  sections.forEach((element) => {
-    if (isInViewport(element)) {
-      deactivateSections();
-      activateCurrentSection(element);
+  sections.forEach((ele) => {
+    if (InViewport(ele)) {
+      stopSections();
+      activateSection(ele);
     } else if (window.scrollY == 0) {
-      deactivateSections();
-      deactivateNavLinks();
+      stopSections();
+      stopNavLinks();
     }
   }, false);
 });
+
+// Scroll to section on link click
+scrollToSectionByClick();
